@@ -1,0 +1,85 @@
+import numpy as np
+from controller import Robot
+
+# Time step of the simulation
+TIME_STEP = 64
+
+# Initialize robot instances
+robots = [Robot() for _ in range(4)]  # Adjust the number in range() as needed for 1 to 4 robots
+
+# Initialize motors and sensors for each robot
+motors = []
+sensors = []
+for robot in robots:
+    left_motor = robot.getDevice('left wheel motor')
+    right_motor = robot.getDevice('right wheel motor')
+    left_motor.setPosition(float('inf'))
+    right_motor.setPosition(float('inf'))
+    left_motor.setVelocity(0.0)
+    right_motor.setVelocity(0.0)
+    motors.append((left_motor, right_motor))
+    
+    robot_sensors = [robot.getDevice('ps' + str(i)) for i in range(8)]
+    for sensor in robot_sensors:
+        sensor.enable(TIME_STEP)
+    sensors.append(robot_sensors)
+
+# Hyperparameters for DITRPO
+alpha = 0.01
+gamma = 0.99
+epsilon = 1e-5
+max_kl = 0.01
+
+# Initialize policy parameters for all robots
+thetas = [np.random.randn(2) for _ in range(len(robots))]
+
+# Function to compute the policy gradient
+def compute_gradient(theta, states, actions, rewards):
+    gradient = np.zeros_like(theta)
+    for t in range(len(states)):
+        state = states[t]
+        action = actions[t]
+        reward = rewards[t]
+        gradient += np.dot(state, action) * reward
+    return gradient
+
+# Function to calculate the reward
+def calculate_reward(sensor_values):
+    reward = 1.0
+    for value in sensor_values:
+        if value > 80:
+            reward -= 0.5  # Penalize for being too close to an obstacle
+    return reward
+
+# Main control loop
+while robots[0].step(TIME_STEP) != -1:
+    for i, robot in enumerate(robots):
+        sensor_values = [sensor.getValue() for sensor in sensors[i]]
+        
+        # Define states and actions based on sensor values
+        state = np.array([sensor_values[0], sensor_values[7]])
+        action = np.array([motors[i][0].getVelocity(), motors[i][1].getVelocity()])
+        
+        # Calculate the reward
+        reward = calculate_reward(sensor_values)
+        
+        # Collect states, actions, and rewards
+        states = [state]
+        actions = [action]
+        rewards = [reward]
+        
+        # Compute the policy gradient
+        gradient = compute_gradient(thetas[i], states, actions, rewards)
+        
+        # Update the policy parameters using DITRPO
+        thetas[i] += alpha * gradient
+        if np.linalg.norm(thetas[i]) > max_kl:
+            thetas[i] = thetas[i] / np.linalg.norm(thetas[i]) * max_kl
+        
+        # Apply new policy to motors
+        if sensor_values[0] > 80 or sensor_values[7] > 80:
+            motors[i][0].setVelocity(-4.0)
+            motors[i][1].setVelocity(4.0)  # Turn left if an obstacle is detected
+        else:
+            motors[i][0].setVelocity(4.0)
+            motors[i][1].setVelocity(4.0)  # Move forward
