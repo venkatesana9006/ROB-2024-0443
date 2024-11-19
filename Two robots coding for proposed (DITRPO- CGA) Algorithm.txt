@@ -1,0 +1,123 @@
+import numpy as np
+from controller import Robot
+
+# Time step of the simulation
+TIME_STEP = 64
+
+# Initialize robot instances
+robot1 = Robot()
+robot2 = Robot()
+
+# Initialize motors and sensors for robot1
+left_motor1 = robot1.getDevice('left wheel motor')
+right_motor1 = robot1.getDevice('right wheel motor')
+left_motor1.setPosition(float('inf'))
+right_motor1.setPosition(float('inf'))
+left_motor1.setVelocity(0.0)
+right_motor1.setVelocity(0.0)
+sensors1 = [robot1.getDevice('ps' + str(i)) for i in range(8)]
+for sensor in sensors1:
+    sensor.enable(TIME_STEP)
+
+# Initialize motors and sensors for robot2
+left_motor2 = robot2.getDevice('left wheel motor')
+right_motor2 = robot2.getDevice('right wheel motor')
+left_motor2.setPosition(float('inf'))
+right_motor2.setPosition(float('inf'))
+left_motor2.setVelocity(0.0)
+right_motor2.setVelocity(0.0)
+sensors2 = [robot2.getDevice('ps' + str(i)) for i in range(8)]
+for sensor in sensors2:
+    sensor.enable(TIME_STEP)
+
+# Hyperparameters for DITRPO
+alpha = 0.01
+gamma = 0.99
+epsilon = 1e-5
+max_kl = 0.01
+
+# Initialize policy parameters for both robots
+theta1 = np.random.randn(2)
+theta2 = np.random.randn(2)
+
+# Function to compute the policy gradient
+def compute_gradient(theta, states, actions, rewards):
+    gradient = np.zeros_like(theta)
+    for t in range(len(states)):
+        state = states[t]
+        action = actions[t]
+        reward = rewards[t]
+        gradient += np.dot(state, action) * reward
+    return gradient
+
+# Function to calculate the reward
+def calculate_reward(sensor_values):
+    reward = 1.0
+    for value in sensor_values:
+        if value > 80:
+            reward -= 0.5  # Penalize for being too close to an obstacle
+    return reward
+
+# Main control loop
+while robot1.step(TIME_STEP) != -1 and robot2.step(TIME_STEP) != -1:
+    # Read sensor values for robot1
+    sensor_values1 = [sensor.getValue() for sensor in sensors1]
+    
+    # Define states and actions based on sensor values
+    state1 = np.array([sensor_values1[0], sensor_values1[7]])
+    action1 = np.array([left_motor1.getVelocity(), right_motor1.getVelocity()])
+    
+    # Calculate the reward for robot1
+    reward1 = calculate_reward(sensor_values1)
+    
+    # Collect states, actions, and rewards for robot1
+    states1 = [state1]
+    actions1 = [action1]
+    rewards1 = [reward1]
+    
+    # Compute the policy gradient for robot1
+    gradient1 = compute_gradient(theta1, states1, actions1, rewards1)
+    
+    # Update the policy parameters using DITRPO for robot1
+    theta1 += alpha * gradient1
+    if np.linalg.norm(theta1) > max_kl:
+        theta1 = theta1 / np.linalg.norm(theta1) * max_kl
+    
+    # Apply new policy to motors for robot1
+    if sensor_values1[0] > 80 or sensor_values1[7] > 80:
+        left_motor1.setVelocity(-4.0)
+        right_motor1.setVelocity(4.0)  # Turn left if an obstacle is detected
+    else:
+        left_motor1.setVelocity(4.0)
+        right_motor1.setVelocity(4.0)  # Move forward
+
+    # Read sensor values for robot2
+    sensor_values2 = [sensor.getValue() for sensor in sensors2]
+    
+    # Define states and actions based on sensor values
+    state2 = np.array([sensor_values2[0], sensor_values2[7]])
+    action2 = np.array([left_motor2.getVelocity(), right_motor2.getVelocity()])
+    
+    # Calculate the reward for robot2
+    reward2 = calculate_reward(sensor_values2)
+    
+    # Collect states, actions, and rewards for robot2
+    states2 = [state2]
+    actions2 = [action2]
+    rewards2 = [reward2]
+    
+    # Compute the policy gradient for robot2
+    gradient2 = compute_gradient(theta2, states2, actions2, rewards2)
+    
+    # Update the policy parameters using DITRPO for robot2
+    theta2 += alpha * gradient2
+    if np.linalg.norm(theta2) > max_kl:
+        theta2 = theta2 / np.linalg.norm(theta2) * max_kl
+    
+    # Apply new policy to motors for robot2
+    if sensor_values2[0] > 80 or sensor_values2[7] > 80:
+        left_motor2.setVelocity(-4.0)
+        right_motor2.setVelocity(4.0)  # Turn left if an obstacle is detected
+    else:
+        left_motor2.setVelocity(4.0)
+        right_motor2.setVelocity(4.0)  # Move forward
