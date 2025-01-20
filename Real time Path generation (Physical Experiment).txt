@@ -1,0 +1,197 @@
+import matplotlib.pyplot as plt
+import random
+import time
+
+# Initialize the plot
+plt.ion()
+fig, ax = plt.subplots()
+
+# Set up the plot area
+ax.set_xlim(0, 8)
+ax.set_ylim(0, 8)
+ax.set_xlabel('X Coordinate')
+ax.set_ylabel('Y Coordinate')
+ax.set_title('Real-Time Path Generation for Two Robots with Obstacles')
+
+# Initial data for two robots
+x_data_robot1 = []
+y_data_robot1 = []
+x_data_robot2 = []
+y_data_robot2 = []
+
+# Create line objects for both robots
+line_robot1, = ax.plot(x_data_robot1, y_data_robot1, 'bo-', label='Robot 1 Path')
+line_robot2, = ax.plot(x_data_robot2, y_data_robot2, 'ro-', label='Robot 2 Path')
+
+# Draw fixed obstacles
+obstacles = [(2, 2), (4, 4), (6, 6), (7, 7), (3, 5), (7, 3), (5, 1)]  # Example obstacle positions
+for obstacle in obstacles:
+    ax.plot(obstacle[0], obstacle[1], 'ks', markersize=25, label='Obstacle')
+
+# Function to update the plot
+def update_plot(x1, y1, x2, y2):
+    x_data_robot1.append(x1)
+    y_data_robot1.append(y1)
+    x_data_robot2.append(x2)
+    y_data_robot2.append(y2)
+    line_robot1.set_xdata(x_data_robot1)
+    line_robot1.set_ydata(y_data_robot1)
+    line_robot2.set_xdata(x_data_robot2)
+    line_robot2.set_ydata(y_data_robot2)
+    plt.draw()
+    plt.pause(0.01)
+
+# Simulate receiving new coordinates (replace with actual data retrieval)
+for _ in range(50):
+    # Simulate new coordinates for both robots
+    new_x1 = random.uniform(0, 8)
+    new_y1 = random.uniform(0, 8)
+    new_x2 = random.uniform(0, 8)
+    new_y2 = random.uniform(0, 8)
+    update_plot(new_x1, new_y1, new_x2, new_y2)
+    time.sleep(0.2)  # Simulate delay in data reception
+
+plt.ioff()
+plt.show()
+
+
+import matplotlib.pyplot as plt
+import random
+import time
+
+# Initialize the plot
+plt.ion()
+fig, ax = plt.subplots()
+
+# Set up the plot area
+ax.set_xlim(0, 8)
+ax.set_ylim(0, 8)
+ax.set_xlabel('X Coordinate')
+ax.set_ylabel('Y Coordinate')
+ax.set_title('Real-Time Path Generation for Three Robots with Obstacles')
+
+# Initial data for three robots
+x_data_robot1 = []
+y_data_robot1 = []
+x_data_robot2 = []
+y_data_robot2 = []
+x_data_robot3 = []
+y_data_robot3 = []
+
+# Create line objects for all three robots
+line_robot1, = ax.plot(x_data_robot1, y_data_robot1, 'bo-', label='Robot 1 Path')
+line_robot2, = ax.plot(x_data_robot2, y_data_robot2, 'ro-', label='Robot 2 Path')
+line_robot3, = ax.plot(x_data_robot3, y_data_robot3, 'go-', label='Robot 3 Path')
+
+# Draw fixed obstacles
+obstacles = [(2, 2), (3, 5), (5, 2), (6, 6), (7, 4), (7, 2), (2, 3), (4, 4)]  # Example obstacle positions
+for obstacle in obstacles:
+    ax.plot(obstacle[0], obstacle[1], 'ks', markersize=25, label='Obstacle')
+
+# Function to update the plot
+def update_plot(x1, y1, x2, y2, x3, y3):
+    x_data_robot1.append(x1)
+    y_data_robot1.append(y1)
+    x_data_robot2.append(x2)
+    y_data_robot2.append(y2)
+    x_data_robot3.append(x3)
+    y_data_robot3.append(y3)
+    line_robot1.set_xdata(x_data_robot1)
+    line_robot1.set_ydata(y_data_robot1)
+    line_robot2.set_xdata(x_data_robot2)
+    line_robot2.set_ydata(y_data_robot2)
+    line_robot3.set_xdata(x_data_robot3)
+    line_robot3.set_ydata(y_data_robot3)
+    plt.draw()
+    plt.pause(0.01)
+
+# Simulate receiving new coordinates (replace with actual data retrieval)
+for _ in range(50):
+    # Simulate new coordinates for all three robots
+    new_x1 = random.uniform(0, 10)
+    new_y1 = random.uniform(0, 10)
+    new_x2 = random.uniform(0, 10)
+    new_y2 = random.uniform(0, 10)
+    new_x3 = random.uniform(0, 10)
+    new_y3 = random.uniform(0, 10)
+    update_plot(new_x1, new_y1, new_x2, new_y2, new_x3, new_y3)
+    time.sleep(0.2)  # Simulate delay in data reception
+
+plt.ioff()
+plt.show()
+
+
+
+import matplotlib.pyplot as plt
+import random
+import time
+
+# Initialize the plot
+plt.ion()
+fig, ax = plt.subplots()
+
+# Set up the plot area
+ax.set_xlim(0, 8)
+ax.set_ylim(0, 8)
+ax.set_xlabel('X Coordinate')
+ax.set_ylabel('Y Coordinate')
+ax.set_title('Real-Time Path Generation for Four Robots with Obstacles')
+
+# Initial data for four robots
+x_data_robot1 = []
+y_data_robot1 = []
+x_data_robot2 = []
+y_data_robot2 = []
+x_data_robot3 = []
+y_data_robot3 = []
+x_data_robot4 = []
+y_data_robot4 = []
+
+# Create line objects for all four robots
+line_robot1, = ax.plot(x_data_robot1, y_data_robot1, 'bo-', label='Robot 1 Path')
+line_robot2, = ax.plot(x_data_robot2, y_data_robot2, 'ro-', label='Robot 2 Path')
+line_robot3, = ax.plot(x_data_robot3, y_data_robot3, 'go-', label='Robot 3 Path')
+line_robot4, = ax.plot(x_data_robot4, y_data_robot4, 'co-', label='Robot 4 Path')
+
+# Draw fixed obstacles
+obstacles = [(3, 2), (4, 4), (6, 6), (7, 7.5), (5, 2)]  # Example obstacle positions
+for obstacle in obstacles:
+    ax.plot(obstacle[0], obstacle[1], 'ks', markersize=20, label='Obstacle')
+
+# Function to update the plot
+def update_plot(x1, y1, x2, y2, x3, y3, x4, y4):
+    x_data_robot1.append(x1)
+    y_data_robot1.append(y1)
+    x_data_robot2.append(x2)
+    y_data_robot2.append(y2)
+    x_data_robot3.append(x3)
+    y_data_robot3.append(y3)
+    x_data_robot4.append(x4)
+    y_data_robot4.append(y4)
+    line_robot1.set_xdata(x_data_robot1)
+    line_robot1.set_ydata(y_data_robot1)
+    line_robot2.set_xdata(x_data_robot2)
+    line_robot2.set_ydata(y_data_robot2)
+    line_robot3.set_xdata(x_data_robot3)
+    line_robot3.set_ydata(y_data_robot3)
+    line_robot4.set_xdata(x_data_robot4)
+    line_robot4.set_ydata(y_data_robot4)
+    plt.draw()
+    plt.pause(0.01)
+
+# Simulate receiving new coordinates (replace with actual data retrieval)
+for _ in range(50):
+    # Simulate new coordinates for all four robots
+    new_x1 = random.uniform(0, 8)
+    new_y1 = random.uniform(0, 8)
+    new_x2 = random.uniform(0, 8)
+    new_y2 = random.uniform(0, 8)
+    new_x3 = random.uniform(0, 8)
+    new_y3 = random.uniform(0, 8)
+    new_x4 = random.uniform(0, 8)
+    new_y4 = random.uniform(0, 8)
+    update_plot(new_x1, new_y1, new_x2, new_y2, new_x3, new_y3, new_x4, new_y4)
+    time.sleep(0.1)  # Simulate delay in data reception
+
+plt.ioff()
+plt.show()
